@@ -98,7 +98,7 @@ async function generateImage(prompt) {
     try {
         const response = await axios.post(
             'https://api.openai.com/v1/images/generations',
-            { prompt: `${prompt} in a colorful children's book illustration style, whimsical and playful.`, n: 1, size: '1024x1024' },
+            { prompt: `${prompt} in a colorful children's book illustration style, whimsical and playful. Do not generate any text, or realistic humans.`, n: 1, size: '1024x1024' },
             { headers: { Authorization: `Bearer ${OPENAI_API_KEY}` } }
         );
         const imageUrl = response.data.data[0].url;

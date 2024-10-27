@@ -85,7 +85,7 @@ function Game() {
                 </div>
             ) : isGameStarted ? (
                 <>
-                    <p className="text-2xl p-8 pt-4">{story.split(/Option/i)[0].trim()}{/* Remove "Option" and everything that follows */}
+                    <p className="text-white text-2xl p-8 pt-4">{story.split(/Option/i)[0].trim()}{/* Remove "Option" and everything that follows */}
                     </p>
                     <div className="flex display-center justify-center">
                         {imageUrl && <img className="w-[25%]" src={imageUrl} alt="Story Illustration" />}
