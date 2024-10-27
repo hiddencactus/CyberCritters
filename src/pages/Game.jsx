@@ -6,7 +6,7 @@ function Game() {
     const [imageUrl, setImageUrl] = useState('');
     const [choices, setChoices] = useState([]);
     const [isGameStarted, setIsGameStarted] = useState(false);
-    const [isGameEnded, setIsGameEnded] = useState(false); // New state to track if the game has ended
+    const [isGameEnded, setIsGameEnded] = useState(false); // Track if the game has ended
 
     // Function to start the game
     const handleStartGame = async () => {
@@ -44,6 +44,15 @@ function Game() {
         handleStartGame();
     };
 
+    // Function to go to the main menu
+    const handleGoToMainMenu = () => {
+        setIsGameStarted(false); // Reset game started state
+        setStory(''); // Reset story
+        setImageUrl(''); // Reset image URL
+        setChoices([]); // Reset choices
+        setIsGameEnded(false); // Reset game ended state
+    };
+
     return (
         <div>
             <h1>Cyberville Adventure</h1>
@@ -52,7 +61,7 @@ function Game() {
                     <p>{story}</p>
                     {imageUrl && <img src={imageUrl} alt="Story Illustration" />}
                     <button onClick={handlePlayAgain}>Play Again</button>
-                    <button onClick={() => setIsGameStarted(false)}>Main Menu</button>
+                    <button onClick={handleGoToMainMenu}>Main Menu</button>
                 </div>
             ) : isGameStarted ? (
                 <>
