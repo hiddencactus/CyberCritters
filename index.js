@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors'; 
 import dotenv from 'dotenv';
 import inquirer from 'inquirer';
 import axios from 'axios';
@@ -7,9 +8,10 @@ dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const app = express();
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON requests
+app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 
 // Initialize game state
@@ -29,7 +31,7 @@ async function finalGenerateStoryAndChoices(description, choice, priorGeneration
                     { role: 'system', content: "You are a creative storyteller. " },
                     { role: 'user', content: `The adventure story so far: ${description}\nUser chose: "${choice}".\nWrite the final prompt of the story, bringing it to an end in a satisfying manner."` }
                 ],
-                max_tokens: 400,
+                max_tokens: 600,
                 temperature: 0.7,
                 n: 1,
             },
@@ -57,13 +59,16 @@ async function finalGenerateStoryAndChoices(description, choice, priorGeneration
 // Function to generate story and choices using OpenAI's API
 async function generateStoryAndChoices(description, choice, priorGenerationAmount) {
     try {
+        // Check if we have reached the limit of prompts (9 means the next call should end the story)
+        const isFinalPrompt = priorGenerationAmount >= 9;
+
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
             {
                 model: 'gpt-3.5-turbo',
                 messages: [
-                    { role: 'system', content: "You are a creative storyteller, teaching children a lesson about cyber safety (viruses, hackers, passwords). You must conclude the story after 7 prompts. There have already been ${priorGenerationAmount} ai-generated prompts." },
-                    { role: 'user', content: `The adventure story so far: ${description}\nUser chose: "${choice}".\nWrite the next part of the story based on this choice. Provide two realistic, story-relevant options for what the characters could do next. Note that this is intended for children. The story should conclude after 10 prompts. There have already been ${priorGenerationAmount} ai-generated prompts. The resolution should include the phrase "end of the adventure". Ensure that the options start with "Option 1" and "Option 2."` }
+                    { role: 'system', content: "You are a creative storyteller, teaching children a lesson about cyber safety (viruses, hackers, passwords). You must conclude the story after 10 prompts." },
+                    { role: 'user', content: `The adventure story so far: ${description}\nUser chose: "${choice}".\nWrite the next part of the story based on this choice. Provide two realistic, story-relevant options for what the characters could do next.` }
                 ],
                 max_tokens: 200,
                 temperature: 0.7,
@@ -75,18 +80,17 @@ async function generateStoryAndChoices(description, choice, priorGenerationAmoun
                 }
             }
         );
-    
+
         if (response.data.choices && response.data.choices.length > 0) {
-          const generatedTextResponse = await response.data.choices[0].message; //need the await for the console.log
-          console.log(`Generated story and choices: ${generatedTextResponse.content}`);
-          return generatedTextResponse.content;
+            const generatedTextResponse = await response.data.choices[0].message;
+            console.log(`Generated story and choices: ${generatedTextResponse.content}`);
+            return generatedTextResponse.content;
         } else {
-          throw new Error('No choices were returned from the OpenAI API.');
+            throw new Error('No choices were returned from the OpenAI API.');
         }
-      } catch (error) {
+    } catch (error) {
         console.error('Error generating story and choices:', error.response ? error.response.data : error.message);
-      }
-    
+    }
 }
 
 // Generate an image based on the generated prompt
@@ -111,17 +115,21 @@ async function generateImage(prompt) {
 
 // Endpoint to start the game
 app.post('/start-game', async (req, res) => {
-    gameState.description = "Max and Lily begin their journey in the digital land of Cyberville, a vibrant world with glowing neon pathways, where every click opens a new adventure...";
+    gameState.description = "Max and Lily begin their journey in the digital land of Cyberville...";
     gameState.choices = []; // Clear previous choices
   
     try {
+      // Generate the initial story and choices
       const storyText = await generateStoryAndChoices(gameState.description, 'Start the journey', 0);
       gameState.description = storyText;
-  
-      const imageUrl = await generateImage(gameState.description); // Generate an image based on the story
-      const choices = gameState.choices; // Get current choices (if any)
-      
-      res.json({ story: gameState.description, choices, imageUrl });
+
+      // Extract choices from the generated story text
+      gameState.choices = extractChoicesFromStoryText(storyText); // Populate choices based on story text
+
+      // Generate an image based on the story
+      const imageUrl = await generateImage(gameState.description);
+
+      res.json({ story: gameState.description, choices: gameState.choices, imageUrl });
     } catch (error) {
       res.status(500).json({ error: 'Failed to start game' });
     }
@@ -135,19 +143,31 @@ app.get('/choices', (req, res) => {
 // Endpoint to handle user choice
 app.post('/make-choice', async (req, res) => {
     const { choice } = req.body;
-  
+
     try {
-      gameState.choices.push(choice); // Save the user choice
-  
-      const storyText = await generateStoryAndChoices(gameState.description, choice, gameState.choices.length);
-      gameState.description = storyText;
-  
-      const imageUrl = await generateImage(gameState.description); // Generate an image for the updated story
-      const choices = gameState.choices; // Get updated choices
-  
-      res.json({ story: gameState.description, choices, imageUrl });
+        // Check for end condition before generating the new story
+        if (gameState.cnt >= 9) { // At this point, we will transition to the final story
+            const finalStoryText = await finalGenerateStoryAndChoices(gameState.description, choice, gameState.cnt);
+            gameState.description = finalStoryText;
+            gameState.choices = []; // No more choices after the end
+
+            return res.json({ story: gameState.description, choices: [], imageUrl: null, message: "You've reached the end of the adventure!" });
+        } else {
+            // Generate the new story based on the user's choice
+            const storyText = await generateStoryAndChoices(gameState.description, choice, gameState.cnt);
+            gameState.description = storyText;
+            gameState.cnt++;  // Increment the count after each generation
+
+            // Extract choices from the generated story text
+            gameState.choices = extractChoicesFromStoryText(storyText); 
+
+            // Generate an image based on the updated story
+            const imageUrl = await generateImage(gameState.description);
+
+            res.json({ story: gameState.description, choices: gameState.choices, imageUrl });
+        }
     } catch (error) {
-      res.status(500).json({ error: 'Failed to process choice' });
+        res.status(500).json({ error: 'Failed to process choice' });
     }
 });
   
@@ -158,18 +178,18 @@ app.listen(PORT, () => {
 
 // Function to extract choices from the generated story text
 function extractChoicesFromStoryText(storyText) {
-    const choices = [];
+    const choicesSet = new Set(); // Use a Set to filter out duplicates
     const lines = storyText.split('\n');
-  
+
     // Loop through lines to find options
     for (const line of lines) {
-      if (line.startsWith('Option')) {
-        // Trim the line and add it to choices
-        choices.push(line.trim());
-      }
+        if (line.startsWith('Option')) {
+            // Trim the line and add it to choices
+            choicesSet.add(line.trim());
+        }
     }
-  
-    return choices;
+
+    return Array.from(choicesSet); // Convert Set back to Array
 }
 
 //-----------------------------------DELETE AFTER TESTING
@@ -226,7 +246,7 @@ async function testGameFlow() {
     }
   }
 
-testGameFlow();
+//testGameFlow();
 //-----------------------------------------------------------------------------
 
 

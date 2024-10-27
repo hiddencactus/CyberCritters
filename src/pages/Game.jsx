@@ -5,7 +5,8 @@ function Game() {
     const [story, setStory] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [choices, setChoices] = useState([]);
-    const [isGameStarted, setIsGameStarted] = useState(false); // State to track if the game has started
+    const [isGameStarted, setIsGameStarted] = useState(false);
+    const [isGameEnded, setIsGameEnded] = useState(false); // New state to track if the game has ended
 
     // Function to start the game
     const handleStartGame = async () => {
@@ -14,7 +15,8 @@ function Game() {
             setStory(data.story);
             setImageUrl(data.imageUrl);
             setChoices(data.choices);
-            setIsGameStarted(true); // Set the game as started
+            setIsGameStarted(true);
+            setIsGameEnded(false); // Reset game ended state
         } catch (error) {
             console.error('Error starting the game:', error);
         }
@@ -27,19 +29,32 @@ function Game() {
             setStory(data.story);
             setImageUrl(data.imageUrl);
             setChoices(data.choices);
+
+            // Check if the game has ended
+            if (data.message === "You've reached the end of the adventure!") {
+                setIsGameEnded(true); // Set game ended state
+            }
         } catch (error) {
             console.error('Error making a choice:', error);
         }
     };
 
-    useEffect(() => {
-        // Start the game when component mounts if needed or controlled by a button click
-    }, []);
+    // Function to reset the game
+    const handlePlayAgain = () => {
+        handleStartGame();
+    };
 
     return (
         <div>
             <h1>Cyberville Adventure</h1>
-            {isGameStarted ? ( // Check if the game has started
+            {isGameEnded ? (
+                <div>
+                    <p>{story}</p>
+                    {imageUrl && <img src={imageUrl} alt="Story Illustration" />}
+                    <button onClick={handlePlayAgain}>Play Again</button>
+                    <button onClick={() => setIsGameStarted(false)}>Main Menu</button>
+                </div>
+            ) : isGameStarted ? (
                 <>
                     <p>{story}</p>
                     {imageUrl && <img src={imageUrl} alt="Story Illustration" />}
@@ -52,14 +67,13 @@ function Game() {
                     </div>
                 </>
             ) : (
-                // Button to start the game
                 <button onClick={handleStartGame}>Start Game</button>
             )}
         </div>
     );
 }
 
-export default Game
+export default Game;
 
 // import React from 'react'
 // import ActionButton from '../components/ActionButton.jsx'
