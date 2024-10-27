@@ -75,25 +75,25 @@ function Game() {
                 </div>
             ) : isGameEnded ? (
                 <div>
-                    <p className="text-2xl p-8 pt-8">{story.split(/Option/i)[0].trim()} {/* Remove "Option" and everything that follows */}
+                    <p className="bg-amber-600 border-8 border-purple-900 text-2xl p-8 pt-8">{story.split(/Option/i)[0].trim()} {/* Remove "Option" and everything that follows */}
                     </p>
                     {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
                     <div className="flex display-center justify-center">
-                        <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-3 ml-8" onClick={handlePlayAgain}>PLAY AGAIN</button>
-                        <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-3 ml-8" onClick={handleGoToMainMenu}>MAIN MENU</button>
+                        <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-5 ml-9" onClick={handlePlayAgain}>PLAY AGAIN</button>
+                        <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-5 ml-9" onClick={handleGoToMainMenu}>MAIN MENU</button>
                     </div>
                 </div>
             ) : isGameStarted ? (
                 <>
-                    <p className="text-white text-2xl p-8 pt-4">{story.split(/Option/i)[0].trim()}{/* Remove "Option" and everything that follows */}
+                    <p className="bg-amber-600 border-8 border-purple-900 text-white text-2xl p-8 pt-8">{story.split(/Option/i)[0].trim()}{/* Remove "Option" and everything that follows */}
                     </p>
                     <div className="flex display-center justify-center">
-                        {imageUrl && <img className="w-[25%]" src={imageUrl} alt="Story Illustration" />}
+                        {imageUrl && <img className="w-[25%] mt-10" src={imageUrl} alt="Story Illustration" />}
                     </div>
                     <div className="flex display-center justify-center">
                         {choices.map((choice, index) => (
                             <button
-                                className="button bg-lime-500 text-purple-900 text-xl font-bold mt-8 mx-8"
+                                className="button bg-lime-500 text-purple-900 text-xl font-bold mt-10 mx-8"
                                 key={index}
                                 onClick={() => handleMakeChoice(choice)}
                             >
