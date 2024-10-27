@@ -151,6 +151,7 @@ app.post('/make-choice', async (req, res) => {
             const finalStoryText = await finalGenerateStoryAndChoices(gameState.description, choice, gameState.cnt);
             gameState.description = finalStoryText;
             gameState.choices = []; // No more choices after the end
+            gameState.cnt = 0
 
             return res.json({ story: gameState.description, choices: [], imageUrl: null, message: "You've reached the end of the adventure!" });
         } else {
