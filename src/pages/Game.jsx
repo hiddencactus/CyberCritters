@@ -75,32 +75,32 @@ function Game() {
     return (
         <div className="h-screen w-screen bg-purple-900">
             {/* Narrator Profile Box with Story Text */}
-            <div className="flex justify-center mt-4">
-                <div className="bg-orange-500 p-4 flex items-start">
-                    <img src={selectedImage} alt="Narrator" className="w-16 h-16 rounded-full mr-4" />
+            <div className="flex justify-center">
+                <div className="bg-amber-600 border-8 border-purple-900 p-4 flex items-start">
+                    <img src={selectedImage} alt="Narrator" className="w-16 h-16 rounded-full mx-4" />
                     <p className="text-white text-lg">{story.split(/Option/i)[0].trim()}</p>
                 </div>
             </div>
 
             {isLoading ? (
                 <div className="flex justify-center mt-10">
-                    <p className="text-3xl text-lime-500">Loading... Please wait.</p>
+                    <p className="text-3xl font-bold text-lime-500 mt-10">Writing story... Please wait.</p>
                 </div>
             ) : isGameEnded ? (
-                <div>
+                <div className="flex display-center justify-center items-end">
                     {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
-                    <button className="button bg-lime-500 text-purple-900 text-2xl font-bold mt-5 ml-8" onClick={handlePlayAgain}>Play Again</button>
-                    <button className="button bg-lime-500 text-purple-900 text-2xl font-bold mt-5 ml-8" onClick={handleGoToMainMenu}>Main Menu</button>
+                    <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-5 ml-9 items-end" onClick={handlePlayAgain}>PLAY AGAIN</button>
+                    <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-5 ml-9 items-end" onClick={handleGoToMainMenu}>MAIN MENU</button>
                 </div>
             ) : isGameStarted ? (
                 <>
                     <div className="flex display-center justify-center">
-                        {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
+                        {imageUrl && <img className="w-[25%] p-18 mt-12" src={imageUrl} alt="Story Illustration" />}
                     </div>
-                    <div className="flex display-center justify-center">
+                    <div className="flex display-center justify-center absolute bottom-8">
                         {choices.map((choice, index) => (
                             <button
-                                className="button bg-lime-500 text-purple-900 text-2xl font-bold mt-8 mx-8"
+                                className="button bg-lime-500 text-purple-900 text-xl font-bold mt-10 mx-8"
                                 key={index}
                                 onClick={() => handleMakeChoice(choice)}
                             >
@@ -112,9 +112,9 @@ function Game() {
             ) : (
                 <div className="flex display-center justify-center">
                     <div>
-                        <h1 className="flex justify-center text-8xl text-lime-500 font-bold tracking-widest pt-12">CYBERCRITTERS</h1>
-                        <div className="flex justify-center">
-                            <button className="button bg-lime-500 text-purple-900 text-3xl font-bold tracking-widest mt-10" onClick={handleStartGame}>START GAME</button>
+                        <h1 className="flex justify-center text-8xl text-lime-500 font-bold tracking-widest pt-40">CYBERCRITTERS</h1>
+                        <div className="flex justify-center mt-10">
+                            <button className="button bg-lime-500 text-purple-900 text-3xl font-bold tracking-widest" onClick={handleStartGame}>START GAME</button>
                         </div>
                     </div>
                 </div>
