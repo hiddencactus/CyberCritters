@@ -67,7 +67,7 @@ async function generateStoryAndChoices(description, choice, priorGenerationAmoun
             {
                 model: 'gpt-3.5-turbo',
                 messages: [
-                    { role: 'system', content: "You are a creative storyteller, teaching children a lesson about cyber safety (viruses, hackers, passwords). You must conclude the story after 10 prompts." },
+                    { role: 'system', content: "You are a creative storyteller, teaching children a lesson about cyber safety (viruses, hackers, passwords). You must conclude the story after 10 prompts and try to minimize text in the images." },
                     { role: 'user', content: `The adventure story so far: ${description}\nUser chose: "${choice}".\nWrite the next part of the story based on this choice. Provide two realistic, story-relevant options for what the characters could do next.` }
                 ],
                 max_tokens: 200,

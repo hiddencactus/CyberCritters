@@ -41,6 +41,7 @@ function Game() {
 
     // Function to reset the game
     const handlePlayAgain = () => {
+        setChoices([]); // Reset choices
         handleStartGame();
     };
 
@@ -54,49 +55,36 @@ function Game() {
     };
 
     return (
-        <div>
-            <h1>Cyberville Adventure</h1>
+        <div className="h-screen w-screen bg-purple-900">
+            <h1 className="flex justify-center text-8xl text-lime-500 font-bold tracking-widest pt-12">CYBERCRITTERS</h1>
             {isGameEnded ? (
                 <div>
-                    <p>{story}</p>
-                    {imageUrl && <img src={imageUrl} alt="Story Illustration" />}
-                    <button onClick={handlePlayAgain}>Play Again</button>
-                    <button onClick={handleGoToMainMenu}>Main Menu</button>
+                    <p className="text-3xl p-8 pt-8">{story}</p>
+                    {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
+                    <button className="bg-lime-500 border border-white text-purple-900 text-2xl font-bold mt-5 ml-8" onClick={handlePlayAgain}>Play Again</button>
+                    <button className="bg-lime-500 border border-white text-purple-900 text-2xl font-bold mt-5 ml-8" onClick={handleGoToMainMenu}>Main Menu</button>
                 </div>
             ) : isGameStarted ? (
                 <>
-                    <p>{story}</p>
-                    {imageUrl && <img src={imageUrl} alt="Story Illustration" />}
-                    <div>
+                    <p className="text-3xl p-8 pt-8">{story}</p>
+                    <div className="flex display-center justify-center">
+                        {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
+                    </div>
+                    <div className="flex display-center justify-center">
                         {choices.map((choice, index) => (
-                            <button key={index} onClick={() => handleMakeChoice(choice)}>
+                            <button className="bg-lime-500 border border-white text-purple-900 text-2xl font-bold mt-8 mx-8" key={index} onClick={() => handleMakeChoice(choice)}>
                                 {choice}
                             </button>
                         ))}
                     </div>
                 </>
             ) : (
-                <button onClick={handleStartGame}>Start Game</button>
+                <div className="flex display-center justify-center">
+                    <button className="bg-lime-500 border border-white text-purple-900 text-3xl font-bold tracking-widest mt-10" onClick={handleStartGame}>START GAME</button>
+                </div>
             )}
         </div>
     );
 }
 
 export default Game;
-
-// import React from 'react'
-// import ActionButton from '../components/ActionButton.jsx'
-
-// function Game() {
-//   return (
-//     <div>
-//       Game
-//       <div>
-//           <ActionButton name="Option 1" text="Option 1 text" />
-//           <ActionButton name="Option 2" text="Option 2 text" />
-//         </div>
-//     </div>
-//   )
-// }
-
-// export default Game
