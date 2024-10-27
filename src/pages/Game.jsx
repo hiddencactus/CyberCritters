@@ -49,7 +49,11 @@ function Game() {
 
     // Function to reset the game
     const handlePlayAgain = () => {
+        setIsGameStarted(false); // Reset game started state
+        setStory(''); // Reset story
+        setImageUrl(''); // Reset image URL
         setChoices([]); // Reset choices
+        setIsGameEnded(false); // Reset game ended state
         handleStartGame();
     };
 
@@ -64,30 +68,32 @@ function Game() {
 
     return (
         <div className="h-screen w-screen bg-purple-900">
-            <h1 className="flex justify-center text-8xl text-lime-500 font-bold tracking-widest pt-12">CYBERCRITTERS</h1>
+            {/* <h1 className="flex justify-center text-8xl text-lime-500 font-bold tracking-widest pt-12">CYBERCRITTERS</h1> */}
             {isLoading ? ( // Conditional rendering for loading state
-                <div className="flex justify-center mt-10">
-                    <p className="text-3xl text-lime-500">Loading... Please wait.</p>
+                <div className="flex justify-center">
+                    <p className="text-3xl font-bold text-lime-500 mt-10">Loading... Please wait.</p>
                 </div>
             ) : isGameEnded ? (
                 <div>
-                    <p className="text-3xl p-8 pt-8">{story.split(/Option/i)[0].trim()} {/* Remove "Option" and everything that follows */}
+                    <p className="text-2xl p-8 pt-8">{story.split(/Option/i)[0].trim()} {/* Remove "Option" and everything that follows */}
                     </p>
                     {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
-                    <button className="button bg-lime-500 text-purple-900 text-2xl font-bold mt-5 ml-8" onClick={handlePlayAgain}>Play Again</button>
-                    <button className="button bg-lime-500 text-purple-900 text-2xl font-bold mt-5 ml-8" onClick={handleGoToMainMenu}>Main Menu</button>
+                    <div className="flex display-center justify-center">
+                        <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-3 ml-8" onClick={handlePlayAgain}>PLAY AGAIN</button>
+                        <button className="button bg-lime-500 text-purple-900 text-xl font-bold tracking-wider mt-3 ml-8" onClick={handleGoToMainMenu}>MAIN MENU</button>
+                    </div>
                 </div>
             ) : isGameStarted ? (
                 <>
-                    <p className="text-3xl p-8 pt-8">{story.split(/Option/i)[0].trim()}{/* Remove "Option" and everything that follows */}
+                    <p className="text-2xl p-8 pt-4">{story.split(/Option/i)[0].trim()}{/* Remove "Option" and everything that follows */}
                     </p>
                     <div className="flex display-center justify-center">
-                        {imageUrl && <img className="w-[25%] p-8" src={imageUrl} alt="Story Illustration" />}
+                        {imageUrl && <img className="w-[25%]" src={imageUrl} alt="Story Illustration" />}
                     </div>
                     <div className="flex display-center justify-center">
                         {choices.map((choice, index) => (
                             <button
-                                className="button bg-lime-500 text-purple-900 text-2xl font-bold mt-8 mx-8"
+                                className="button bg-lime-500 text-purple-900 text-xl font-bold mt-8 mx-8"
                                 key={index}
                                 onClick={() => handleMakeChoice(choice)}
                             >
@@ -98,7 +104,12 @@ function Game() {
                 </>
             ) : (
                 <div className="flex display-center justify-center">
-                    <button className="button bg-lime-500 text-purple-900 text-3xl font-bold tracking-widest mt-10" onClick={handleStartGame}>START GAME</button>
+                    <div>
+                        <h1 className="flex justify-center text-8xl text-lime-500 font-bold tracking-widest pt-12">CYBERCRITTERS</h1>
+                        <div className="flex justify-center">
+                            <button className="button bg-lime-500 text-purple-900 text-3xl font-bold tracking-widest mt-10" onClick={handleStartGame}>START GAME</button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
