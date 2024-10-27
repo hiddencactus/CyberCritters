@@ -68,7 +68,7 @@ async function generateStoryAndChoices(description, choice, priorGenerationAmoun
                 model: 'gpt-3.5-turbo',
                 messages: [
                     { role: 'system', content: "You are a creative storyteller, teaching children a lesson about cyber safety (viruses, hackers, passwords). You must conclude the story after 10 prompts and try to minimize text in the images." },
-                    { role: 'user', content: `The adventure story so far: ${description}\nUser chose: "${choice}".\nWrite the next part of the story based on this choice. Provide two realistic, story-relevant options for what the characters could do next.` }
+                    { role: 'user', content: `The adventure story so far: ${description}\nUser chose: "${choice}".\nWrite the next part of the story based on this choice. Write a short piece of story, afterwhich provide two realistic, story-relevant options labelled Option 1 and Option 2 for what the characters could do next.` }
                 ],
                 max_tokens: 200,
                 temperature: 0.7,
@@ -98,7 +98,7 @@ async function generateImage(prompt) {
     try {
         const response = await axios.post(
             'https://api.openai.com/v1/images/generations',
-            { prompt, n: 1, size: '1024x1024' },
+            { prompt: `${prompt} in a colorful children's book illustration style, whimsical and playful.`, n: 1, size: '1024x1024' },
             { headers: { Authorization: `Bearer ${OPENAI_API_KEY}` } }
         );
         const imageUrl = response.data.data[0].url;
@@ -122,6 +122,7 @@ app.post('/start-game', async (req, res) => {
       // Generate the initial story and choices
       const storyText = await generateStoryAndChoices(gameState.description, 'Start the journey', 0);
       gameState.description = storyText;
+      console.log(gameState.description)
 
       // Extract choices from the generated story text
       gameState.choices = extractChoicesFromStoryText(storyText); // Populate choices based on story text
@@ -178,20 +179,20 @@ app.listen(PORT, () => {
 
 // Function to extract choices from the generated story text
 function extractChoicesFromStoryText(storyText) {
-    const choicesSet = new Set(); // Use a Set to filter out duplicates
+    const choices = [];
     const lines = storyText.split('\n');
 
-    // Loop through lines to find options
+    // Use regex to capture lines that start with "Option" and ignore other text
+    const optionRegex = /^Option\s\d+:/i;
+
     for (const line of lines) {
-        if (line.startsWith('Option')) {
-            // Trim the line and add it to choices
-            choicesSet.add(line.trim());
+        if (optionRegex.test(line.trim())) {
+            choices.push(line.trim());  // Add only choice lines to the array
         }
     }
 
-    return Array.from(choicesSet); // Convert Set back to Array
+    return choices; // Returns an array of options, or empty if none found
 }
-
 //-----------------------------------DELETE AFTER TESTING
 async function testGameFlow() {
     try {

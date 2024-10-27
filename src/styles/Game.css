@@ -1,0 +1,18 @@
+.button {
+    transition: background-color 0.3s ease, transform 0.1s ease; /* Smooth transition for background and transform */
+    border: 2px solid white; /* Adjust border thickness */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+/* Hover effect */
+.button:hover {
+    background-color: #A3E635; /* Change background color on hover */
+    transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+/* Active effect for click */
+.button:active {
+    transform: scale(0.95); /* Slightly shrink the button on click */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow effect */
+}
+
